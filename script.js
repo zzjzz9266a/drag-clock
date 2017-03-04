@@ -5,6 +5,24 @@ var canvas = document.querySelector('canvas'),
 var _width = canvas.width,
     _height = canvas.height,
     angle = Math.PI/180;
+var hourOn = false
+var hourBtn = document.getElementById("hour")
+var minuteOn = true
+var minuteBtn = document.getElementById("minute")
+var hourDegree = 60
+var minuteDegree = 120
+hourBtn.onclick = function () {
+    hourOn = true
+    minuteOn = false
+//    console.log("小时");
+}
+
+minuteBtn.onclick = function () {
+    hourOn = false
+    minuteOn = true
+//    console.log("分钟")
+}
+
 function drawClock(_angle) {
     cvs.clearRect(0,0,_width,_height);
     cvs.save();
@@ -12,25 +30,28 @@ function drawClock(_angle) {
     cvs.beginPath();
     cvs.strokeStyle= '#000';
     cvs.strokeWidth= 2;
-    cvs.arc(_width/2,_height/2,150,0,360*angle,false);
+    cvs.arc(_width/2,_height/2,_width/2,0,360*angle,false);
     cvs.stroke();
     cvs.closePath();
 //绘制刻度
     cvs.strokeStyle='#foo';
-    cvs.strokeWidth = 1;
+//    cvs.strokeWidth = 1;
     cvs.translate(_width/2,_height/2);
     for(var j=0; j<12; j++){
+        cvs.lineWidth = 2
         cvs.save();
         cvs.rotate(30*angle*j);
-        cvs.moveTo(0,-140);
-        cvs.lineTo(0,-150);
+        cvs.moveTo(0,-270);
+        cvs.lineTo(0,-300);
         cvs.stroke();
-
+        
+        
         for(var i=1; i<=4; i++){
+            cvs.lineWidth = 1
             cvs.save();
             cvs.rotate(angle*6*i);
-            cvs.moveTo(0,-145);
-            cvs.lineTo(0,-150);
+            cvs.moveTo(0,-290);
+            cvs.lineTo(0,-300);
             cvs.stroke();
             cvs.restore();
         }
@@ -41,36 +62,54 @@ function drawClock(_angle) {
     cvs.strokeStyle= '#f00';
     cvs.strokeWidth= 2;
 //绘制指针
-    //分针
-    rotateMinute(_angle);
-    //时针
-    rotateHour(_angle);
+    
+    if (hourOn){
 
-//旋转指针
-    function rotateMinute(degree) {
-        cvs.save();
-        cvs.rotate(degree*angle);
-        cvs.beginPath();
-        cvs.moveTo(0,0);
-        cvs.lineTo(0,-100);
-        cvs.stroke();
-        cvs.closePath();
-        cvs.restore();
+        //时针
+        rotateHour(_angle);
+        rotateMinute(minuteDegree)
+        console.log("assdasdaasdf");
     }
-    function rotateHour(degree) {
-        cvs.save();
-        cvs.rotate(degree*angle/12);
-        cvs.beginPath();
-        cvs.moveTo(0,0);
-        cvs.lineTo(0,-60);
-        cvs.stroke();
-        cvs.closePath();
-        cvs.restore();
+    if (minuteOn){
+        //分针
+        rotateHour(hourDegree)
+        rotateMinute(_angle);
     }
     cvs.restore();
 }
+
+function rotateMinute(degree) {
+    cvs.save();
+    cvs.rotate(degree*angle);
+    cvs.beginPath();
+    cvs.strokeStyle = "red"
+    cvs.lineWidth = 4
+    cvs.moveTo(0,0);
+    cvs.lineTo(0,-250);
+    cvs.stroke();
+    cvs.closePath();
+    cvs.restore();
+    minuteDegree = degree
+    minuteBtn.innerHTML = "分钟：" + parseInt(degree/6)
+}
+
+function rotateHour(degree) {
+    cvs.save();
+    cvs.rotate(degree*angle);///12);
+    cvs.beginPath();
+    cvs.strokeStyle = "black"
+    cvs.lineWidth = 8
+    cvs.moveTo(0,0);
+    cvs.lineTo(0,-180);
+    cvs.stroke();
+    cvs.closePath();
+    cvs.restore();
+    hourDegree = degree
+    hourBtn.innerHTML = "小时：" + parseInt(degree/30)
+}
 //初始化钟表
 drawClock(0);
+
 //绘制扇形图
 function drawSector(x, y, r, sdegree, edegree, color) {
     var single = Math.PI / 180;
@@ -105,7 +144,7 @@ canvas.addEventListener('mousedown',function (e) {
 
     drawClock(angle);
 
-    drawSector(_width/2,_height/2,100,-90,angle-90,'#ccc');
+//    drawSector(_width/2,_height/2,100,-90,angle-90,'#ccc');
 });
 
 canvas.addEventListener('mousemove',function (e) {
